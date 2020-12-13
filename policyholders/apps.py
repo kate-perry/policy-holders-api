@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class PolicyholdersConfig(AppConfig):
+class PolicyHoldersConfig(AppConfig):
     name = 'policyholders'

@@ -3,7 +3,7 @@ from datetime import date
 
 class PolicyHolder(models.Model):
     gender = models.CharField(max_length=70, blank=False, default='')
-    dob: models.DateField(default=date.date(1900, 1, 1))
+    dob: models.DateField(default=date(1900, 1, 1))
     ssn: models.CharField(max_length=9, blank=False, default='')
     smoking: models.BooleanField(default=False)
     allergies = models.CharField(max_length=170, blank=True, default='')
