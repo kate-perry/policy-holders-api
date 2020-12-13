@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'policyholders.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'policyholder_db'),
+        'NAME': 'policyholder_db',
         'HOST': '127.0.0.1',
         'PORT': 27017,
     }
