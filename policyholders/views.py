@@ -6,8 +6,9 @@ from policyholders.models import PolicyHolder, InsuredEvent
 from policyholders.serializers import PolicyHolderSerializer, InsuredEventSerializer
 from rest_framework.decorators import api_view
 
-# Policy Holders
-@api_view(['GET', 'POST', 'DELETE'])
+### Policy Holders
+# GET and POST one-to-multiple policy holders
+@api_view(['GET', 'POST'])
 def policyholder_list(request):
     if request.method == 'GET':
         policyholders = PolicyHolder.objects.all()
@@ -26,12 +27,9 @@ def policyholder_list(request):
             policyholder_serializer.save()
             return JsonResponse(policyholder_serializer.data, status=status.HTTP_201_CREATED) 
         return JsonResponse(policyholder_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        count = PolicyHolder.objects.all().delete()
-        return JsonResponse({'message': '{} Policy Holders were deleted successfully.'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
- 
-@api_view(['GET', 'PUT', 'DELETE'])
+    
+# GET a policy holder based on ID
+@api_view(['GET'])
 def policyholder_detail(request, pk):
     try: 
         policyholder = PolicyHolder.objects.get(pk=pk) 
@@ -42,21 +40,10 @@ def policyholder_detail(request, pk):
         policyholder_serializer = PolicyHolderSerializer(policyholder)
         return JsonResponse(policyholder_serializer.data)
 
-    elif request.method == 'PUT':
-        policyholder_data = JSONParser().parse(request)
-        policyholder_serializer = PolicyHolderSerializer(policyholder, data=policyholder_data)
-        if policyholder_serializer.is_valid():
-            policyholder_serializer.save()
-            return JsonResponse(policyholder_serializer.data, status=status.HTTP_201_CREATED) 
-        return JsonResponse(policyholder_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE':
-        policyholder.delete()
-        return JsonResponse({'message': 'Policy Holder was deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
- 
-
- # Insured Events
-@api_view(['GET', 'POST', 'DELETE'])
+### Insured Events
+# GET and POST one-to-multiple insured events
+@api_view(['GET', 'POST'])
 def insuredevent_list(request):
     if request.method == 'GET':
         insuredEvents = InsuredEvent.objects.all()
@@ -76,13 +63,9 @@ def insuredevent_list(request):
             return JsonResponse(insuredEvents_serializer.data, status=status.HTTP_201_CREATED) 
         return JsonResponse(insuredEvents_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE':
-        count = InsuredEvent.objects.all().delete()
-        return JsonResponse({'message': '{} Policy Holders were deleted successfully.'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
- 
-@api_view(['GET', 'PUT', 'DELETE'])
+# GET an insured event based on ID
+@api_view(['GET'])
 def insuredevent_detail(request, pk):
-    # find insured event by id (pk)
     try: 
         insuredEvent = InsuredEvent.objects.get(pk=pk) 
     except InsuredEvent.DoesNotExist: 
@@ -92,22 +75,14 @@ def insuredevent_detail(request, pk):
         insuredEvent_serializer = InsuredEventSerializer(insuredEvent)
         return JsonResponse(insuredEvent_serializer.data)
 
-    elif request.method == 'PUT':
-        insuredEvent_data = JSONParser().parse(request)
-        insuredEvent_serializer = InsuredEventSerializer(insuredEvent, data=insuredEvent_data)
-        if insuredEvent_serializer.is_valid():
-            insuredEvent_serializer.save()
-            return JsonResponse(insuredEvent_serializer.data, status=status.HTTP_201_CREATED) 
-        return JsonResponse(insuredEvent_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        insuredEvent.delete()
-        return JsonResponse({'message': 'Policy Holder was deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
- 
+# GET a list of insured events based on PolicyHolderId
 @api_view(['GET'])
-def insuredevent_list_by_policyholder(request, fk):
-    # find insured event by policy holder id (fk)
-    insuredEvents = InsuredEvent.objects.filter(policyHolderId=fk)
+def insuredevent_by_policy_holder_list(request, fk):
+    try: 
+        insuredEvent = InsuredEvent.objects.get(fk=fk) 
+    except InsuredEvent.DoesNotExist: 
+        return JsonResponse({'message': 'The event does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+
     if request.method == 'GET':
-        insuredEvent_serializer = InsuredEventSerializer(insuredEvents, many=True)
-        return JsonResponse(insuredEvent_serializer.data, safe=False)
+        insuredEvent_serializer = InsuredEventSerializer(insuredEvent)
+        return JsonResponse(insuredEvent_serializer.data)
